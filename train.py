@@ -3,7 +3,10 @@ import numpy as np
 import pandas as pd
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
 from sklearn.model_selection import train_test_split
+from augmentators import randomHueSaturationValue, randomHorizontalFlip, randomShiftScaleRotate
 from u_net import get_unet_128
+from AU_Net import att_unet
+from metrics import iou_score
 import glob
 
 
@@ -40,6 +43,15 @@ def train_generator():
                 img  = cv2.resize(img, (input_size, input_size))
                 mask = cv2.imread(train_img_mask_path_template.format(id), cv2.IMREAD_GRAYSCALE)
                 mask = cv2.resize(mask, (input_size, input_size))
+                img = randomHueSaturationValue(img,
+                                               hue_shift_limit=(-50, 50),
+                                               sat_shift_limit=(-5, 5),
+                                               val_shift_limit=(-15, 15))
+                img, mask = randomShiftScaleRotate(img, mask,
+                                                   shift_limit=(-0.25, 0.25),
+                                                   scale_limit=(-0.3, 0.3),
+                                                   rotate_limit=(-10, 10))
+                img, mask = randomHorizontalFlip(img, mask)
                 mask = np.expand_dims(mask, axis=2)
                 x_batch.append(img)
                 y_batch.append(mask)

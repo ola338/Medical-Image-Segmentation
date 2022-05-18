@@ -3,7 +3,10 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from losses import bce_dice_loss
+from augmentators import randomHueSaturationValue, randomHorizontalFlip, randomShiftScaleRotate
 from u_net import get_unet_128
+from AU_Net import att_unet
+from metrics import iou_score
 import glob
 
 orig_width = 240
@@ -41,7 +44,7 @@ for start in tqdm(range(0, len(test_filenames), batch_size)):
         prob = np.array(cv2.resize(pred, (orig_width, orig_height)) > threshold).astype(np.float32) * 255
         current_filename = ids_test_batch[index]
         # print(bce_dice_loss(x_batch, prob))
-        cv2.imwrite('dataset/test/seg_pred_att/{}.jpg'.format(id), prob)
+        cv2.imwrite('dataset/test/seg_pred/{}.jpg'.format(id), prob)
         
 
 print("Done!")

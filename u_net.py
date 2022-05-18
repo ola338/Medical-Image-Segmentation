@@ -110,6 +110,7 @@ def get_unet_128(input_shape=(128, 128, 3),
     # 128
 
     classify = Conv2D(num_classes, (1, 1), activation='sigmoid')(up1)
+
     model = Model(inputs=inputs, outputs=classify)
     model.compile(optimizer=RMSprop(lr=0.001), loss=bce_dice_loss, metrics=[dice_loss])
 
