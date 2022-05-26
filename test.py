@@ -14,11 +14,13 @@ orig_height = 320
 
 threshold = 0.5
 
-
 epochs = 10
 batch_size = 1
-input_size, model = get_unet_128()
-model.load_weights(filepath='weights/best_weights.hdf5')
+input_size, model = att_unet()
+
+filepath_unet='weights/unet_weights/best_u_weights.hdf5'
+filepath_att_unet='weights/att_unet_weights/best_au_weights.hdf5'
+model.load_weights(filepath = filepath_att_unet) 
 
 print(input_size)
 
@@ -44,7 +46,7 @@ for start in tqdm(range(0, len(test_filenames), batch_size)):
         prob = np.array(cv2.resize(pred, (orig_width, orig_height)) > threshold).astype(np.float32) * 255
         current_filename = ids_test_batch[index]
         # print(bce_dice_loss(x_batch, prob))
-        cv2.imwrite('dataset/test/seg_pred/{}.jpg'.format(id), prob)
+        cv2.imwrite('dataset/test/seg_pred_att/{}.jpg'.format(id), prob)
         
 
 print("Done!")
