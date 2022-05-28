@@ -13,17 +13,20 @@ import glob
 epochs = 50
 batch_size = 1
 
-input_size, model = get_unet_128()
-#model.load_weights(filepath='weights/best_weights.hdf5') # For resuming train
+input_size, model = att_unet()
+#model.load_weights(filepath= #'weights/att_unet_weights/best_au_weights.hdf5') # For resuming train
 
-train_img_path_template = 'dataset/train/{}.jpg'
-train_img_mask_path_template = 'dataset/train/segmentation/{}.png'
+train_img_path_template = 'dataset/train/x-ray_st/{}.png'
+train_img_mask_path_template = 'dataset/train/mask_manual/{}.png'
 
-train_filenames = glob.glob("dataset/train/*.jpg")
-train_filenames = [filename.replace('\\','/').replace('.jpg', '') for filename in train_filenames]
+train_filenames = glob.glob("dataset/train/x-ray_st/*.png")
+train_filenames = [filename.replace('\\','/').replace('.png', '') for filename in train_filenames]
 train_filenames = [filename.split('/')[-1] for filename in train_filenames]
 
 train_split, valid_split = train_test_split(train_filenames, test_size=0.10, random_state=42)
+
+filepath_unet='weights/unet_weights/best_u_weights.hdf5'
+filepath_att_unet='weights/att_unet_weights/best_au_weights.hdf5'
 
 print('Training on {} samples'.format(len(train_split)))
 print('Validating on {} samples'.format(len(valid_split)))
@@ -95,7 +98,7 @@ callbacks = [
                                epsilon=1e-5,
                                mode='max'),
              ModelCheckpoint(monitor='val_dice_loss',
-                             filepath='weights/best_weights.hdf5',
+                             filepath=filepath_att_unet, 
                              save_best_only=True,
                              save_weights_only=True,
                              mode='max'),
