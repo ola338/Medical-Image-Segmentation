@@ -6,7 +6,7 @@ from losses import bce_dice_loss, dice_loss
 from metrics import iou_score
 
 
-def gatingsignal(input, features):
+def gating_signal(input, features):
     x = Conv2D(features, (1, 1), padding='same')(input)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
@@ -76,7 +76,7 @@ def att_unet(input_shape=(128, 128, 3), num_classes=1):
     up = center
     for i in reversed(range(depth)):
         features = features // 2
-        gating = gatingsignal(up, features)
+        gating = gating_signal(up, features)
         att = attention_block(downs[i], gating, features)        
         up = UpSampling2D((2, 2), data_format="channels_last")(up)
         up = concatenate([up, att], axis=3)
