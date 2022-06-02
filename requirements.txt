@@ -1,0 +1,6 @@
+numpy
+scikit-learn
+tensorflow>=2.9.0
+keras
+tqdm
+opencv-python

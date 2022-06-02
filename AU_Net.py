@@ -3,7 +3,6 @@ from keras.layers import Conv2DTranspose, Input, concatenate, Dropout, Conv2D, M
 from keras import backend as K
 from keras.optimizers import RMSprop
 from losses import bce_dice_loss, dice_loss
-from metrics import iou_score
 
 
 def gating_signal(input, features):
