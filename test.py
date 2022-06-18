@@ -3,6 +3,7 @@ import numpy as np
 from tqdm import tqdm
 from u_net import get_unet_128
 import glob
+from AU_Net import att_unet
 
 if __name__ == '__main__':
     orig_width = 240
@@ -12,7 +13,7 @@ if __name__ == '__main__':
 
     epochs = 10
     batch_size = 1
-    input_size, model = get_unet_128()
+    input_size, model = att_unet()
 
     test_img_path_template = 'dataset/test/x-ray_st/{}.png'
     test_img_mask_path_template = 'dataset/test/mask_manual/{}.png'
@@ -27,7 +28,7 @@ if __name__ == '__main__':
     test_filenames = [filename.replace('\\', '/').replace('.png', '') for filename in test_filenames]
     test_filenames = [filename.split('/')[-1] for filename in test_filenames]
 
-    print(f'Predicting on {len(test_filenames)} samples with {batch_size=}...')
+    print('Predicting on {} samples with batch_size = {}...'.format(len(test_filenames), batch_size))
     for start in tqdm(range(0, len(test_filenames), batch_size)):
         x_batch = []
         end = min(start + batch_size, len(test_filenames))
