@@ -10,23 +10,24 @@ class Augmentators:
     ])
 
     @staticmethod
-    def augment(img, mask, *, hue=True, scale=True, sharp=True, hflip=True, vflip=True):
+    def augment(img, mask, *, force=False, hue=True, scale=True, sharp=True, hflip=True, vflip=True):
+        u = 1.0 if force else 0.5
         if hue:
             img = Augmentators._random_hue_saturation_value(img,
                                                             hue_shift_limit=(-50, 50),
                                                             sat_shift_limit=(-5, 5),
-                                                            val_shift_limit=(-15, 15))
+                                                            val_shift_limit=(-15, 15), u=u)
         if sharp:
             img = Augmentators._random_sharpening(img)
         if scale:
             img, mask = Augmentators._random_shift_scale_rotate(img, mask,
                                                                 shift_limit=(-0.25, 0.25),
                                                                 scale_limit=(-0.3, 0.3),
-                                                                rotate_limit=(-10, 10))
+                                                                rotate_limit=(-10, 10), u=u)
         if hflip:
-            img, mask = Augmentators._random_horizontal_flip(img, mask)
+            img, mask = Augmentators._random_horizontal_flip(img, mask, u=u)
         if vflip:
-            img, mask = Augmentators._random_vertical_flip(img, mask)
+            img, mask = Augmentators._random_vertical_flip(img, mask, u=u)
 
         return img, mask
 

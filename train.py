@@ -5,9 +5,10 @@ from sklearn.model_selection import train_test_split
 from augmentators import Augmentators
 from AU_Net import att_unet
 import glob
+import itertools
 
 
-def train_generator():
+def train_generator(augment: bool = True, all_comb=False):
     while True:
         train_split, valid_split = train_test_split(train_filenames, test_size=0.10, random_state=42)
 
@@ -17,16 +18,41 @@ def train_generator():
             end = min(start + batch_size, len(train_split))
             ids_train_batch = train_split[start:end]
             for id in ids_train_batch:
-                img  = cv2.imread(train_img_path_template.format(id))
-                img  = cv2.resize(img, (input_size, input_size))
+                img = cv2.imread(train_img_path_template.format(id))
+                img = cv2.resize(img, (input_size, input_size))
                 mask = cv2.imread(train_img_mask_path_template.format(id), cv2.IMREAD_GRAYSCALE)
                 mask = cv2.resize(mask, (input_size, input_size))
 
-                img, mask = Augmentators.augment(img, mask)
+                if augment and all_comb:
+                    for lst in itertools.product([False, True], repeat=5):
+                        _img, _mask = Augmentators.augment(img, mask,
+                                                           force=True,
+                                                           hue=lst[0],
+                                                           scale=lst[1],
+                                                           sharp=lst[2],
+                                                           hflip=lst[3],
+                                                           vflip=lst[4])
 
-                mask = np.expand_dims(mask, axis=2)
-                x_batch.append(img)
-                y_batch.append(mask)
+                        _mask = np.expand_dims(_mask, axis=2)
+                        x_batch.append(_img)
+                        y_batch.append(_mask)
+                elif augment and not all_comb:
+                    for idx in range(6):
+                        _img, _mask = Augmentators.augment(img, mask,
+                                                           force=True,
+                                                           hue=idx == 0,
+                                                           scale=idx == 1,
+                                                           sharp=idx == 2,
+                                                           hflip=idx == 3,
+                                                           vflip=idx == 4)
+
+                        _mask = np.expand_dims(_mask, axis=2)
+                        x_batch.append(_img)
+                        y_batch.append(_mask)
+                else:
+                    mask = np.expand_dims(mask, axis=2)
+                    x_batch.append(img)
+                    y_batch.append(mask)
             x_batch = np.array(x_batch, np.float32) / 255
             y_batch = np.array(y_batch, np.float32) / 255
             yield x_batch, y_batch
@@ -42,8 +68,8 @@ def valid_generator():
             end = min(start + batch_size, len(valid_split))
             ids_valid_batch = valid_split[start:end]
             for id in ids_valid_batch:
-                img  = cv2.imread(train_img_path_template.format(id))
-                img  = cv2.resize(img, (input_size, input_size))
+                img = cv2.imread(train_img_path_template.format(id))
+                img = cv2.resize(img, (input_size, input_size))
                 mask = cv2.imread(train_img_mask_path_template.format(id), cv2.IMREAD_GRAYSCALE)
                 mask = cv2.resize(mask, (input_size, input_size))
                 mask = np.expand_dims(mask, axis=2)
@@ -95,7 +121,7 @@ if __name__ == '__main__':
     print(f'Training on {len(train_split)} samples')
     print(f'Validating on {len(valid_split)} samples')
 
-    model.fit_generator(generator=train_generator(),
+    model.fit_generator(generator=train_generator(augment=True, all_comb=False),
                         steps_per_epoch=np.ceil(float(len(train_split)) / float(batch_size)),
                         epochs=epochs,
                         verbose=2,
