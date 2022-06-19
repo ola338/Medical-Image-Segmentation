@@ -52,8 +52,8 @@ if __name__ == "__main__":
     score = [s[1:]for s in SCORE]
     score = np.mean(score, axis=0)
     print(f"Dice: {score[0]:0.5f}")
-    print(f"Jaccard: {score[2]:0.5f}")
+    print(f"Jaccard: {score[1]:0.5f}")
    
     df = pd.DataFrame(SCORE)
     df.columns = ["Image", "Dice", "Jaccard"]
-    df.to_csv("score-seg_pred_att_finall.csv")
+    df.to_csv("score-seg_pred_att_final.csv")
