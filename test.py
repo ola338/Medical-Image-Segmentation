@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 from tqdm import tqdm
-from u_net import get_unet_128
+from models.u_net import get_unet_128
 import glob
-from AU_Net import att_unet
+from models.AU_Net import att_unet
 
 if __name__ == '__main__':
     orig_width = 240

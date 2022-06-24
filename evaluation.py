@@ -4,7 +4,8 @@ import pandas as pd
 from glob import glob
 from tqdm import tqdm
 from sklearn.metrics import  f1_score, jaccard_score
-from AU_Net import att_unet
+from models.AU_Net import att_unet
+from models.u_net import get_unet_128
 
 
 def read_image(path):

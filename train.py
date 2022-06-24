@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
-from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint, TensorBoard
+from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint, TensorBoard, EarlyStopping
 from sklearn.model_selection import train_test_split
 from augmentators import Augmentators
-from AU_Net import att_unet
+from models.AU_Net import att_unet
+from models.u_net import get_unet_128
 import glob
 import itertools
 
@@ -100,11 +101,11 @@ if __name__ == '__main__':
     filepath_att_unet = 'weights/att_unet_weights/best_au_weights.hdf5'
 
     callbacks = [
-        #        EarlyStopping(monitor='val_dice_loss',
-        #                           patience=8,
-        #                           verbose=1,
-        #                           min_delta=1e-4,
-        #                           mode='max'),
+        EarlyStopping(monitor='val_dice_loss',
+                            patience=8,
+                            verbose=1,
+                            min_delta=1e-4,
+                            mode='max'),
         ReduceLROnPlateau(monitor='val_dice_loss',
                           factor=0.5,
                           patience=4,
